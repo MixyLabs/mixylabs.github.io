@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluetooth MIDI Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body x-data="midiTester()" class="bg-gray-100">
+    <div class="flex h-screen">
+        <div class="w-1/3 bg-gray-200 p-4 flex flex-col">
+            <button @click="connect" :disabled="connected"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 mb-2 self-center"
+                style="max-width: 8em; width: 100%;">Connect</button>
+            <button @click="disconnect" :disabled="!connected"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 self-center"
+                style="max-width: 8em; width: 100%;">Disconnect</button>
+            <div class="mt-4">
+                <h3 class="text-lg font-bold">Device Info</h3>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div class="font-bold">Model:</div>
+                    <div x-text="device.model || 'N/A'"></div>
+                    <div class="font-bold">SN:</div>
+                    <div x-text="device.serialNumber || 'N/A'"></div>
+                    <div class="font-bold">Knobs:</div>
+                    <div x-text="device.knobsAmount || 'N/A'"></div>
+                </div>
+            </div>
+        </div>
+        <div class="w-2/3 flex flex-col p-4">
+            <div class="flex-grow bg-white rounded-lg p-4 flex items-center justify-evenly">
+                <template x-for="control in controls">
+                    <div class="flex flex-col items-center" x-show="control.value > -1"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-90"
+                        x-transition:enter-end="opacity-100 transform scale-100">
+                        <label x-text="control.name" class="text-sm font-medium"></label>
+                        <div class="w-12 h-48 bg-gray-200 rounded-lg relative overflow-hidden mt-2">
+                            <div class="bg-blue-500 absolute bottom-0 w-full" :style="`height: ${control.value}%`">
+                            </div>
+                        </div>
+                        <span x-text="control.value" class="text-sm mt-2"></span>
+                    </div>
+                </template>
+            </div>
+            <div class="mt-4 pb-4">
+                <h3 class="text-lg font-bold">Configuration</h3>
+                <div class="flex flex-wrap gap-6 mt-2 items-end ">
+                    <template x-for="param in mixyParams">
+                        <div class="flex flex-col items-center">
+                            <label class="text-sm font-medium" x-text="param.label"></label>
+                            <div class="mt-1">
+                                <input type="number" :min="param.min" :max="param.max" :step="param.step"
+                                    x-model.number="param.value" @wheel="onParamWheel($event, param)"
+                                    class="border border-gray-300 p-2 w-20 text-center" />
+                            </div>
+                        </div>
+                    </template>
+                    <button @click="applyMixyParams"
+                        :class="paramsChanged() ? 'bg-yellow-500 hover:bg-yellow-600 text-black border-2 border-yellow-700' : 'bg-blue-500 hover:bg-blue-700 text-white border-2'"
+                        class="py-2 px-4 rounded h-12 flex items-center gap-2 font-bold">
+                        Apply Parameters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
