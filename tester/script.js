@@ -8,11 +8,11 @@ document.addEventListener('alpine:init', () => {
         connected: false,
         device: {},
         controls: [
-            { name: 'CC 0', value: -1 },
             { name: 'CC 1', value: -1 },
             { name: 'CC 2', value: -1 },
             { name: 'CC 3', value: -1 },
             { name: 'CC 4', value: -1 },
+            { name: 'CC 5', value: -1 },
         ],
         mixyParams: [
             {
